@@ -29,6 +29,24 @@ export default function Home() {
     setSessionId(id)
     // 각 날짜별 추억 개수 가져오기
     fetchMemoryCounts()
+
+    // 10분마다 메모리 개수 업데이트 (경제적)
+    const interval = setInterval(() => {
+      fetchMemoryCounts()
+    }, 10 * 60 * 1000) // 10분 = 600,000ms
+
+    // 클린업
+    return () => clearInterval(interval)
+  }, [fetchMemoryCounts])
+
+  // 페이지가 다시 포커스될 때도 업데이트 (탭 전환 후 돌아왔을 때)
+  useEffect(() => {
+    const handleFocus = () => {
+      fetchMemoryCounts()
+    }
+
+    window.addEventListener('focus', handleFocus)
+    return () => window.removeEventListener('focus', handleFocus)
   }, [fetchMemoryCounts])
 
   const handleArchiveClick = async () => {
